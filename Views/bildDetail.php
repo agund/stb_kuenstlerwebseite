@@ -1,95 +1,77 @@
 <?php
-    include "konfig.php";
+    /**
+     * Include and requirements
+     */
+    require_once("konfig.php");
     require_once("Model/DBCon.php");
+
+    /**
+     * Constants
+     */
     $dbc = new MysqliDb($config);
+    $logedIn = !empty($_SESSION['kid']);
+    $pic = (empty($_GET['bildid'])) ? [] : $dbc->rawQuery("Call GetBildDetail(?)", array($_GET['bildid']));
 
-    $logedIn = (!empty($_SESSION['kid'])? true : false);
-    $pic = array();
-    if(!empty($_GET['bildid']))
-        $pic = $dbc->rawQuery("Call GetBildDetail(?)", array($_GET['bildid']));
-
-    //var_dump($pic);
-
-    $html ='';
-    $html .='<h1> Bild-Details: '.$pic[0]['Titel'].' </h1>';
-    
-    $html .='<section class="bg-light" style="padding:1em;">';
-    $html .='<div class="row">';
-    $html .='<div class="col-6">';
-    $html .='<img src="Bilder/big/'.$pic[0]['bild'].'" alt="" style="width:100%;;height:60%;">';
-    $html .='</div>';
-    $html .='<div class="col-6">';
-    $html .='<div><label style="font-weight:bold;">Künstler:</label> '.$pic[0]['pseudonym'].' </div>';
-    $html .='<div><label style="font-weight:bold;">Erscheinungsdatum: </label>'.$pic[0]['erscheinungsjahr'].'</div>';
-    $html .='<div><label style="font-weight:bold;">Beschreibung:</label> '.$pic[0]['Beschreibung'].' </div>';
-    if($logedIn)
-    {
-        $html .='<div style="float:right;padding:1em;" >';
-        $html .= '<form method="GET" action="index.php?alink=kaufen">
-        <input type="hidden" value="kaufen" name="alink" />
-        <input type="submit" value="kaufen" class="btn btn-primary" />
-        <input type="hidden" value="'.$pic[0]['bild_ID'].'" name="bildid" />
-        </form>';
-        $html .= '</div>';
-    }
-    $html .='<div style="margin-top:5em;"><label>Discussion:  <label></div>';
-    
-
-    $html .= '<table class="table">';
-    $html .= '<thead>';
-    $html .= '<tr>';
-    $html .= '<th>';
-    $html .= 'Nachricht';
-    $html .= '</th>';
-    $html .= '<th>';
-    $html .= 'Von';
-    $html .= '</th>';
-    $html .= '<th>';
-    $html .= 'Datum';
-    $html .= '</th>';
-    $html .= '</tr>';
-    $html .= '</thead>';
-    $html .= '</tbody>';
-    $html .= '</tbody>';
-    
-    $chat = $dbc->rawQuery("Call GetBildChat(?)", array($_GET['bildid']));
-    //var_dump($chat);
-    for ($i=0; $i < count($chat); $i++) { 
-        $html .= '<tr>';
-        $html .= '<td>';
-        $html .= $chat[$i]['msg_text'];
-        $html .= '</td>';
-        $html .= '<td>';
-        $html .= $chat[$i]['nachname'];
-        $html .= '</td>';
-        $html .= '<td>';
-        $html .= $chat[$i]['zeit'];
-        $html .= '</td>';
-        $html .= '</tr>';    
-    }
-    
-
-
-    if($logedIn)
-    {
-        $html .= '<tr>';
-        $html .= '<form method="post" action="Controller/bildChat.php">';
-        $html .= '<td colspan="2">';
-        $html .= '<input type="text" placeholder="Nachricht" name="msg" class="form-control" style="width:100%;" />
-                  <input type="hidden" value="'.$pic[0]['bild_ID'].'" name="bildid" />';
-        $html .= '</td>';
-        $html .= '<td>';
-        $html .= '<input type="submit" value="Senden" class="btn btn-primary"/>';
-        $html .= '</td>';
-        $html .= '</form>';
-        $html .= '</tr>';
-
-        $html .= '</table>';
-    }
-
-    $html .='</div>';
-    $html .='</div>';
-    $html .='</section>';
+    /**
+     * Build the picture detials
+     */
+    $html ='<h2>Bild-Details: '.$pic[0]['Titel'].'</h2>
+            <section class="bg-light p-3 picture-details">
+                <div class="row">
+                    <div class="col-6">
+                        <img src="Bilder/big/'.$pic[0]['bild'].'" alt="">
+                    </div>
+                    <div class="col-6">
+                        <div><b>Künstler: </b>'.$pic[0]['pseudonym'].'</div>
+                        <div><b>Erscheinungsdatum: </b>'.$pic[0]['erscheinungsjahr'].'</div>
+                        <div><b>Beschreibung:</b> '.$pic[0]['Beschreibung'].' </div>';
+                        if($logedIn) {
+                            $html .='<div style="float:right;padding:1em;" >';
+                            $html .= '<form method="GET" action="index.php?alink=kaufen">
+                            <input type="hidden" value="kaufen" name="alink" />
+                            <input type="submit" value="kaufen" class="btn btn-primary" />
+                            <input type="hidden" value="'.$pic[0]['bild_ID'].'" name="bildid" />
+                            </form>';
+                            $html .= '</div>';
+                        };
+                    $html .='<div class="mt-4 mb-2"><b>Discussion:</b></div>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nachricht</th>
+                                    <th>Von</th>
+                                    <th>Datum</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                                $chats = $dbc->rawQuery("Call GetBildChat(?)", array($_GET['bildid']));
+                                
+                                if(!empty($chats)) {
+                                    foreach($chats AS $chat) {
+                                        $html .= '<tr>
+                                                    <td>'.$chat['msg_text'].'</td>
+                                                    <td>'.$chat['nachname'].'</td>
+                                                    <td>'.$chat['zeit'].'</td>
+                                                </tr>';    
+                                    };
+                                };
+                                if($logedIn) {
+                                    $html .= '<tr>
+                                                <form method="post" action="Controller/bildChat.php">
+                                                    <td colspan="2">
+                                                        <input type="text" placeholder="Nachricht" name="msg" class="form-control" style="width:100%;" />
+                                                        <input type="hidden" value="'.$pic[0]['bild_ID'].'" name="bildid" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="submit" value="Senden" class="btn btn-primary" />
+                                                    </td>
+                                                </form>
+                                            </tr>';
+                                };
+                            $html .= '</tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>';
     echo $html;
-
 ?>

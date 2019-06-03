@@ -1,0 +1,12 @@
+.submenu_hidden { 
+    visibility: hidden;  
+    height: 0;
+    display: block;
+    z-index: 1000; 
+  }
+  
+  .submenu_show {    
+    visibility: visible;
+    height: auto;  
+  }
+ 

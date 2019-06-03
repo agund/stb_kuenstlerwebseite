@@ -1,0 +1,9 @@
+IGNORIERTE Dateien bei der Bildbearbeitung
+07.01.2019, 20:14:42
+==========================================
+. - DIRECTORY
+.. - DIRECTORY
+Bildeigenschaften.xlsx - KEIN BILD
+big - DIRECTORY
+small - DIRECTORY
+~$Bildeigenschaften.xlsx - KEIN BILD

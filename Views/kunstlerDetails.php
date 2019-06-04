@@ -17,10 +17,10 @@
      */
     $html = '<h2> Künstler-Details: '.$kuenstler[0]['pseudonym'].'</h2>
             <div class="row">
-                <div class="col-4 text-center">
-                    <img width="500" src="'.(empty($kuenstler[0]['avatar']) ? "./Bilder/no-img.png" : "data:image/jpeg;base64,".base64_encode($kuenstler[0]['avatar'])).'" alt="" title="" />
+                <div class="col-6 text-center">
+                    <img style="width:100%" src="'.(empty($kuenstler[0]['avatar']) ? "./Bilder/no-img.png" : "data:image/jpeg;base64,".base64_encode($kuenstler[0]['avatar'])).'" alt="" title="" />
                 </div>
-            <div class="col-8">
+            <div class="col-6">
                 <b>Portrait</b>
                 <div>'.$kuenstler[0]['portrait'].'</div>
                 <b>Geburtstag</b>

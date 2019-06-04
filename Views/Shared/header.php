@@ -22,7 +22,7 @@
                     <script src="Views/js/script.js" async></script>
                 </head>
                 <body>
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
                         <a class="navbar-brand" href="index.php">K&uuml;nstlerwebseite</a>
                         <div style="position:absolute; right:0.5em;top:0.5em;">
                             <form method="get" action="?ham=true'.'">
@@ -45,11 +45,24 @@
                                             <li>
                                                 <a class="nav-link '.(($alink==$konst['bildsuche'])?'active':'').'" href="?alink=bildsuche">Bildsuche</a>
                                             </li>';
+
                                             if(!empty($_SESSION['kid']) && (!empty($_SESSION['kuenstler'])) && ((int)$_SESSION['kuenstler'] == 1)) {
                                                 $html .= '<li class="nav-item">
                                                             <a class="nav-link '.(($alink==$konst['bildUpload'])?'active':'').'" href="?alink=bildUpload">Upload</a>
                                                         </li>';
                                             };
+
+                                            if(empty($_SESSION['kid']))
+                                            {
+                                                $html .= '<li>
+                                                <a class="nav-link '.(($alink==$konst['login'])?'active':'').'" href="?alink=login">Login</a>
+                                                </li>';
+                                            } else {
+                                                $html .= '<li>
+                                                <a class="nav-link '.(($alink==$konst['login'])?'active':'').'" href="?alink=logout">Logout</a>
+                                                </li>';
+                                            }
+                                            
                                         $html .= '</ul>
                                     </div>';
                         };

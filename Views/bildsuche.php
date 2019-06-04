@@ -7,7 +7,7 @@ $html .= '<h2>Bildsuche</h2>
   <div class="card-body">
     <p class="card-text">In der Suche ist es möglich, schnell nach Bildern zu suchen, oder durch Filter die Suche einzugrenzen.</p>
     <form class="form-inline" action="index.php" method="GET">
-      <div class="input-group mb-3 col-2">
+      <div class="input-group mb-3 col-4">
       <input type="hidden"  name="alink" value="bildsuche" />
           <input type="text" class="form-control" name="suchtext" placeholder="Suche" value="'.(!empty($_GET['suchtext'])? $_GET['suchtext']:'').'">
       </div>

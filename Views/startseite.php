@@ -26,8 +26,8 @@
                             };
                             
                             $myImg = (object)array(
-                                "classes" => (file_exists("./Bilder/big/".$res[$i]['bild'])) ? "" : "card-no-img",
-                                "link" => (file_exists("./Bilder/big/".$res[$i]['bild'])) ? "./Bilder/big/".$res[$i]['bild'] : "./Bilder/no-img.png"
+                                "classes" => (file_exists("./Bilder/small/".$res[$i]['bild'])) ? "" : "card-no-img",
+                                "link" => (file_exists("./Bilder/small/".$res[$i]['bild'])) ? "./Bilder/small/".$res[$i]['bild'] : "./Bilder/no-img.png"
                             );
                             
                             $html .= '<div class="card default-card">
@@ -40,7 +40,7 @@
                                             <a href="index.php?alink=bilddetail&bildid='.$res[$i]['bild_ID'].'" class="btn btn-primary">Details</a>
                                             <div>Views: '.($res[$i]['views'] == ''?'0':$res[$i]['views']).'</div>';
                                             if($logedIn) {
-                                                $html .= '<h6 class="price-link> Preis: '. $res[$i]["preis"].' €'.'</h6>';
+                                                $html .= '<h6 class="price-link"> Preis: '. $res[$i]["preis"].' €'.'</h6>';
                                             };
 
                                         $html .= '</div>

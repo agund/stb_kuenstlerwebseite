@@ -54,12 +54,12 @@
     $html .='<thead>';
     $html .='<th>Bild</th>';
     $html .='<th>Titel</th>';
-    $html .='<th>Beschreibung</th>';
+    $html .='<th class=" d-md-none d-sm-none ">Beschreibung</th>';
     $html .='<th>Jahr</th>';
     if($logedIn)
-        $html .='<th>Preis</th>';
-    $html .='<th></th>'; 
-    $html .='<th></th>'; 
+        $html .='<th class=" d-md-none d-sm-none ">Preis</th>';
+    $html .='<th class=" d-md-none d-sm-none "></th>'; 
+    $html .='<th ></th>'; 
     
     $html .='</thead>';
     $html .='<tbody>';
@@ -69,17 +69,17 @@
         $html .='<td><img src="Bilder/small/'.$katPicture[$i]['bild'].'" alt=""/></td>';
         
         $html .='<td>'.$katPicture[$i]['Titel'].'</td>';
-        $html .='<td>'.$katPicture[$i]['Beschreibung'].'</td>';
+        $html .='<td class=" d-md-none d-sm-none ">'.$katPicture[$i]['Beschreibung'].'</td>';
         $html .='<td>'.$katPicture[$i]['erscheinungsjahr'].'</td>';
         if($logedIn)
-            $html .='<td>'.$katPicture[$i]['preis'].'</td>';
+            $html .='<td class=" d-md-none d-sm-none ">'.$katPicture[$i]['preis'].'</td>';
         
             //var_dump($katPicture);
         if(!empty($_SESSION['kid'])){
-            $html .='<td><form method="GET" action="index.php?alink=kaufen"><input type="hidden" value="'.$katPicture[$i]['bild_ID'].'" name="bildid" />
+            $html .='<td class=" d-md-none d-sm-none " ><form method="GET" action="index.php?alink=kaufen"><input type="hidden" value="'.$katPicture[$i]['bild_ID'].'" name="bildid" />
             <input type="hidden" value="kaufen" name="alink" /><input type="submit" value="kaufen" class="btn btn-primary" /></form></td>';
         }
-        $html .='<td><form method="GET" action="index.php?alink=bilddetail"><input type="hidden" value="bilddetail" name="alink" />
+        $html .='<td ><form method="GET" action="index.php?alink=bilddetail"><input type="hidden" value="bilddetail" name="alink" />
         <input type="hidden" value="'.$katPicture[$i]['bild_ID'].'" name="bildid" /><input type="submit" value="Details" class="btn btn-primary" />
         </form></td>'; 
         

@@ -1,116 +1,105 @@
 <?php
-
-if(empty($_SESSION['kid']))
-    {
+    /**
+     * Login check
+    */
+    if(empty($_SESSION['kid'])) {
         header('Location: index.php');
         exit;
-    }
+    };
 
-$html = '';
+    /**
+     * Include and requirements
+    */
+    require_once("konfig.php");
+    require_once("Model/DBCon.php");
 
-//$html .= '<div class="row">';
+    /**
+     * Constants
+     */
+     $db = new MysqliDb($config);
+     $res = $db->rawQuery("Call GetChats(?)",array($_SESSION['kid']));
 
-include "konfig.php";
-include "Model/DBCon.php";
-$db = new MysqliDb($config);
-$res = $db->rawQuery("Call GetChats(?)",array($_SESSION['kid']));
+     /**
+     * Build the chat content
+     */
+     $html = '<div class="row">
+                <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12 mb-3">
+                    <ul class="list-group">
+                        <li class="list-group-item '.(!isset($_GET['chatuserid']) || (int)$_GET['chatuserid'] === 0 ? "active" : "").'">
+                            <a href="?chatuserid=0&alink=chat">
+                                <i class="fa fa-address-book mr-2"></i>Neuer Chat
+                            </a>
+                        </li>';
+                        foreach($res AS $chat) {
+                            if(empty($chat['ID'])) {
+                                continue;
+                            };
+                            $html .= '<li class="list-group-item '.(isset($_GET['chatuserid']) && (int)$_GET['chatuserid'] === $chat['ID'] ? "active" : "").'">
+                                        <a href="?chatuserid='.$chat['ID'].'&alink=chat">
+                                            <i class="fa fa-address-card mr-2"></i>'.$chat['NACHNAME'].' '.$chat['VORNAME'].'
+                                        </a>
+                                    </li>';
+                        };
+                    $html .= '</ul>
+                </div>
+                <hr class="w-100 mx-3 d-lg-none d-xl-none" style="border: 1px dotted #aaa"/>
+                <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">';
+                    if(!isset($_GET['chatuserid']) || (int)$_GET['chatuserid'] === 0) {
+                        $kunden = $db->rawQuery("Call GetAllKunden()");
+                        
+                        $html .= '<div class="p-3">
+                                    <form method="POST" action="./Controller/chat.php">
+                                        <div class="row">
+                                            <div class="col-12 mb-2">
+                                                <select name="to" id="toSelect" class="custom-select w-100">
+                                                    <option class="d-none" selected disabled>Namen auswählen</option>';
+                                                    foreach($kunden AS $kunde) {
+                                                        $html .= '<option value="'.$kunde['kunden_ID'].'">'.$kunde['nachname'].' '.$kunde['vorname'].'</option>';
+                                                    };
+                                                $html .= '</select>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="d-flex">
+                                                    <input class="form-control mr-4 w-100" style="height:5em;" type="text" value="" placeholder="Nachricht" name="msg" />
+                                                    <input class="btn btn-primary" style="height:5em;" type="submit" value="Senden" placeholder="" name="" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>';
+                    } else {
+                        $resUserChat = $db->rawQuery("Call GetChatsMessages(?,?)", array($_SESSION['kid'],$_GET['chatuserid']));
 
-// var_dump($res);
-// echo 'SESSID:'.$_SESSION['kid'];
-$html .= '<div style="float:left;" class="col-3">';
-
-$html .= '<div class="bg-light col-12" style="border: 1px solid silver;" >';
-$html .= '<div style="width:200%;padding:0.5em;">';
-$html .= '<span><i class="fa fa-address-book" style="float:left;font-size:1.5em;color:silver;"></i><form style="margin:0;"> <input type="hidden" value="0" name="chatuserid" /><input type="hidden" value="chat" name="alink" />  <input type="submit" style="border:0;" class="bg-light" value="Neuer Chat" /> </form></span>';
-$html .= '</div>';
-$html .= '</div>';
-for ($i=0; $i < count($res); $i++) { 
-    if($res[$i]['ID'] != null){
-        $html .= '<div class="bg-light col-12" style="border: 1px solid silver;" >';
-        $html .= '<div style="width:200%;padding:0.5em;">';
-        $html .= '<span>
-        <i class="	fa fa-address-card" style="float:left;font-size:1.5em;color:silver;"></i>
-        <form style="margin:0;"> <input type="hidden" value="'.$res[$i]['ID'].'" name="chatuserid" /><input type="hidden" value="chat" name="alink" /> <input type="submit" style="border:0;" class="bg-light" value="'.$res[$i]['NACHNAME'].' '.$res[$i]['VORNAME'].'" /> </form></span>';
-        $html .= '</div>';
-        $html .= '</div>';
-    }
-    
-}
-
-//$html .= '<div class="bg-light col-12" style="border: 1px solid silver;" >';
-//$html .= '<div style="width:200%;padding:0.5em;">';
-//$html .= '<span>MAyer</span>';
-//$html .= '</div>';
-//$html .= '</div>';
-
-
-$html .= '</div>';
-
-$html .= '<div class="bg-light offset-3 col-9" style="padding:0;">';
-$html .= '<div style="width:100%;height:100%;">';
-
-//var_dump($_GET['chatuserid']);
-if(isset($_GET['chatuserid']))
-{
-    if($_GET['chatuserid']==0)
-    {
-        $html .= '<div style="padding:1em;">';
-        $html .= '<form method="POST" action="./Controller/chat.php">';
-       
-        $html .= '<div class="col-12" style="padding:0;">';
-        $html .= '<select name="to" id="toSelect" class="custom-select col-3" >';
-        $html .= '<option></option>';
-
-        $kunden = $db->rawQuery("Call GetAllKunden()");
-
-        //var_dump($kunden);
-        for ($i=0; $i <count($kunden) ; $i++) { 
-                $html .= '<option value="'.$kunden[$i]['kunden_ID'].'">'.$kunden[$i]['nachname'].' '.$kunden[$i]['vorname'].'</option>';
-        }
-        $html .= '</select>';
-        $html .= '</div>';
-
-        //$html .= '<input type="hidden" value="'.$_GET['chatuserid'].'" name="to" />';
-        $html .= '<input class="form-control mr-4" style="height:5em;width:88%;float:left;" type="text" value="" placeholder="Nachricht" name="msg" />';
-        $html .= '<input class="btn btn-primary" style="height:5em;width:10%;float:right;" type="submit" value="Senden" placeholder="" name="" />';
-        $html .= '</form>';
-        $html .= '</div>';
-    } 
-    else
-    {
-        $resUserChat = $db->rawQuery("Call GetChatsMessages(?,?)",array($_SESSION['kid'],$_GET['chatuserid']));
-        //var_dump($resUserChat);
-
-        for ($i=0; $i < count($resUserChat); $i++) { 
-            $html .= '<div style="border-bottom:1px solid silver;padding:0.5em;height:3.3em;">';
-            $html .= '<span style="font-weight:bold; '.($resUserChat[$i]['VON_ID']==$_SESSION['kid']?'float:right;right:0;':'float:left;left:0;').' '.($resUserChat[$i]['gelesen']==0?'font-weight:bold;':'font-weight:normal;').' "> '.$resUserChat[$i]['msg_text'].'</span>';
-            $html .= '<span style="font-weight:bold;font-size:0.65em;'.($resUserChat[$i]['VON_ID']==$_SESSION['kid']?'float:left;left:0;':'float:right;right:0;').'"> '.$resUserChat[$i]['Zeit'].' </span>';
-            $html .= '<br />';
-            if($resUserChat[$i]['gelesen']==1 && $resUserChat[$i]['VON_ID']!=$_SESSION['kid'])
-            $html .= '<i class="fa fa-check" style="float:right;font-size:0.7em;padding:0.2em;color:green;"></i>';
-            $html .= '<span style="font-weight:bold;font-size:0.65em;'.($resUserChat[$i]['VON_ID']==$_SESSION['kid']?'float:left;left:0;':'float:right;right:0;').'">  '.($resUserChat[$i]['VON_ID']==$_SESSION['kid']?'ich':$resUserChat[$i]['VON_NACHNAME']).'</span>';
-            $html .= '</div>';    
-        }
-
-        $html .= '<div style="position:absolute;bottom:0;padding:1em;width:100%;" >';
-        $html .= '<form method="POST" action="./Controller/chat.php">';
-        $html .= '<input type="hidden" value="'.$_GET['chatuserid'].'" name="to" />';
-        $html .= '<input class="form-control mr-4" style="height:5em;width:88%;float:left;" type="text" value="" placeholder="Nachricht" name="msg" />';
-        $html .= '<input class="btn btn-primary" style="height:5em;width:10%;float:right;" type="submit" value="Senden" placeholder="" name="" />';
-        $html .= '</form>';
-        $html .= '</div>';
-    }
-}
-
-$html .= '</div >';
-$html .= '</div>';
-
-
-
-
-
-//$html .= '</div>';
-
+                        if(!empty($resUserChat)) {
+                            foreach($resUserChat AS $num => $chat) {
+                                $html .= '<div style="'.($num === (count($resUserChat) - 1) ? "" : "border-bottom:1px solid silver;").'">
+                                            <div class="d-flex justify-content-between my-2">
+                                                <b style="font-size: .7rem;">'.$chat['Zeit'].'</b>
+                                                <i style="font-size: .7rem;">'.($chat['VON_ID'] == $_SESSION['kid'] ? 'ich' : $chat['VON_NACHNAME']).'</i>
+                                            </div>
+                                            <div class="d-flex justify-content-between my-2">
+                                                <span>'.$chat['msg_text'].'</span>';
+                                                if($chat['gelesen'] == 1 && $chat['VON_ID'] != $_SESSION['kid']) {
+                                                    $html .= '<span class="text-success ml-2" style="font-size: .7rem;"><i class="fa fa-check mr-2"></i>Gelesen</span>';
+                                                };
+                                            $html .= '</div>
+                                        </div>';
+                            };
+                        };
+                        $html .= '<form method="POST" action="./Controller/chat.php">
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <div class="d-flex">
+                                                <input type="hidden" value="'.$_GET['chatuserid'].'" name="to" />
+                                                <input class="form-control mr-4 w-100" style="height:5em;" type="text" value="" placeholder="Nachricht" name="msg" />
+                                                <input class="btn btn-primary" style="height:5em;" type="submit" value="Senden" placeholder="" name="" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>';
+                    };
+                $html .= '</div>
+            </div>';
 echo $html;
 
 ?>

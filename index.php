@@ -14,7 +14,7 @@
 	 */
 	require_once('Views/Shared/header.php');
 	echo '<main>
-			<div style="padding:2em;">';
+			<div class="big-padding">';
 			switch($alink) {
 				case $konst['gallery']:
 					include_once('Views/gallery.php');

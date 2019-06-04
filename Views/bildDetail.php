@@ -18,10 +18,10 @@
     $html ='<h2>Bild-Details: '.$pic[0]['Titel'].'</h2>
             <section class="bg-light p-3 picture-details">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-md-6 col-sm-12 col-xs-12 mb-2">
                         <img src="Bilder/big/'.$pic[0]['bild'].'" alt="">
                     </div>
-                    <div class="col-6">
+                    <div class="col-md-6 col-sm-12 col-xs-12">
                         <div><b>Künstler: </b>'.$pic[0]['pseudonym'].'</div>
                         <div><b>Erscheinungsdatum: </b>'.$pic[0]['erscheinungsjahr'].'</div>
                         <div><b>Beschreibung:</b> '.$pic[0]['Beschreibung'].' </div>';
@@ -29,7 +29,7 @@
                             $html .='<div style="float:right;padding:1em;" >';
                             $html .= '<form method="GET" action="index.php?alink=kaufen">
                             <input type="hidden" value="kaufen" name="alink" />
-                            <input type="submit" value="kaufen" class="btn btn-primary" />
+                            <input type="submit" value="kaufen" class="btn btn-success" />
                             <input type="hidden" value="'.$pic[0]['bild_ID'].'" name="bildid" />
                             </form>';
                             $html .= '</div>';
@@ -58,12 +58,12 @@
                                 if($logedIn) {
                                     $html .= '<tr>
                                                 <form method="post" action="Controller/bildChat.php">
-                                                    <td colspan="2">
-                                                        <input type="text" placeholder="Nachricht" name="msg" class="form-control" style="width:100%;" />
-                                                        <input type="hidden" value="'.$pic[0]['bild_ID'].'" name="bildid" />
-                                                    </td>
-                                                    <td>
-                                                        <input type="submit" value="Senden" class="btn btn-primary" />
+                                                    <td colspan="3">
+                                                        <div style="display: flex;">
+                                                            <input type="text" placeholder="Nachricht" name="msg" class="form-control" />
+                                                            <input type="hidden" value="'.$pic[0]['bild_ID'].'" name="bildid" />
+                                                            <input type="submit" value="Senden" class="ml-2 btn btn-primary" />
+                                                        </div>
                                                     </td>
                                                 </form>
                                             </tr>';

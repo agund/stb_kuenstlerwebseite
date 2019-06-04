@@ -55,7 +55,7 @@ a:hover {
 
 .default-card {
 	width: 18rem;
-	margin: 1em;
+	margin: 1rem auto;
 }
 
 .default-card > div {
@@ -98,5 +98,23 @@ a:hover {
  
 .picture-details img {
 	width: 100%;
-	height: 60%;
+}
+
+.big-padding {
+	padding: 2em;
+}
+
+.list-group-item.active > a {
+	color: #fff;
+}
+
+.list-group-item.active > a:hover {
+	opacity: .8;
+}
+
+@media(max-width: 560px) {
+	.big-padding {
+		padding: 1rem .5rem;
+		margin: 0 auto;
+	}
 }

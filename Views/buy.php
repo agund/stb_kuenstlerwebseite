@@ -1,58 +1,60 @@
 <?php
-    if(empty($_SESSION['kid']))
-    {
+    /**
+     * Session check
+     */
+    if(empty($_SESSION['kid'])) {
         header('Location: index.php');
         exit;
-    }
+    };
 
-    include "konfig.php";
+    /**
+     * Include and requirements
+     */
+    require_once("konfig.php");
     require_once("Model/DBCon.php");
+
+    /**
+     * Constants
+     */
     $dbc = new MysqliDb($config);
+    $res = $dbc->rawQuery("Call BildKaufDetails(?)", array($_GET['bildid']));
 
-    $res = $dbc->rawQuery("Call BildKaufDetails(?)",array($_GET['bildid']));
-
-    //BildKaufDetails
-
-
-    //var_dump($res);
-    $html = '';
-    $html .= '<section class="bg-light" style="padding:4em;">';
-
-    $html .= '<div class="row" style="margin-bottom:1em;">';
-    $html .= '<div class="col-6">';
-    $html .= '<label style="font-weight:bold;">Titel</label>';
-    $html .= '<div>'.$res[0]['Titel'].'</div>';
-    $html .= '<label style="font-weight:bold;">Preis</label>';
-    $html .= '<div>'.$res[0]['preis'].'</div>';
-    $html .= '<label style="font-weight:bold;">Beschreibung</label>';
-    $html .= '<div>'.$res[0]['Beschreibung'].'</div>';
-    $html .= '<label style="font-weight:bold;">Autor</label>';
-    $html .= '<div>'.$res[0]['Titel'].'</div>';
-
-    $html .= '<label style="font-weight:bold;"l>Bild Höhe</label>';
-    $html .= '<div>'.$res[0]['bild_hoehe'].' cm</div>';
-    $html .= '<label style="font-weight:bold;">Bild Breite</label>';
-    $html .= '<div>'.$res[0]['bild_breite'].' cm</div>';
-
-    $html .= '</div>';
-
-    $html .= '<div class="col-6">';
-    $html .= '<img style="width:100%;" src="Bilder/big/'.$res[0]['bild'].'" alt="" title="" />';
-    $html .= '</div>';
-    $html .= '</div>';
-
-   if($res[0]['kauf_datum'] == null)
-   {
-    $html .= '<div style="float:right;">
-    <form method="post" action="Controller/buy.php">
-    <input type="hidden" value="'.$res[0]['bild_ID'].'" name="bildid" />
-    <input type="submit" value="Verbindlich kaufen" class="btn btn-primary " />
-    </form>
-    </div>';
-    $html .= '</section>';
-   } else {
-       $html .= '<div style="float:right;" class="btn btn-danger disabled" >Bild wurde bereits verkauft</div>';
-   }
-
+    /**
+     * Build the buy content
+     */
+    $html = '<h2>'.$res[0]['Titel'].'</h2>
+            <section class="bg-light big-padding">
+                <div class="row mb-3">
+                    <div class="col-md-6 col-sm-12 col-xs-12 mb-2">
+                        <img class="w-100" src="Bilder/big/'.$res[0]['bild'].'" alt="" title="" />
+                    </div>
+                    <div class="col-md-6 col-sm-12 col-xs-12">
+                        <b>Titel</b>
+                        <div class="mb-2">'.$res[0]['Titel'].'</div>
+                        <b>Preis</b>
+                        <div class="mb-2">'.$res[0]['preis'].'</div>
+                        <b>Beschreibung</b>
+                        <div class="mb-2">'.$res[0]['Beschreibung'].'</div>
+                        <b>Autor</b>
+                        <div class="mb-2">'.$res[0]['Titel'].'</div>
+                        <b>Bild Höhe</b>
+                        <div class="mb-2">'.$res[0]['bild_hoehe'].' cm</div>
+                        <b>Bild Breite</b>
+                        <div>'.$res[0]['bild_breite'].' cm</div>
+                    </div>
+                </div>
+                <div class="col">';
+                    if($res[0]['kauf_datum'] == null) {
+                        $html .= '<div style="d-flex">
+                                    <form method="post" action="Controller/buy.php">
+                                        <input type="hidden" value="'.$res[0]['bild_ID'].'" name="bildid" />
+                                        <input type="submit" value="Verbindlich kaufen" class="w-100 btn btn-success " />
+                                    </form>
+                                </div>';
+                    } else {
+                        $html .= '<div class="btn btn-danger disabled w-100" >Bild wurde bereits verkauft</div>';
+                    };
+                $html .= '</div>
+            </section>';
     echo $html;
 ?>

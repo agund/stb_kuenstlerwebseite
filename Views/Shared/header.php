@@ -12,6 +12,10 @@
                 <head>
                     <title>'.$config['HomepageTitle'].'</title>
 
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                    <meta name="author" content="A. Gundermann">
+
                     <link rel="stylesheet" href="Views/css/bootstrap.css"  crossorigin="anonymous">
                     <link rel="stylesheet" href="Views/css/style.css"  crossorigin="anonymous">
                     <link rel="stylesheet" href="Views/css/jquery-ui.min.css"  crossorigin="anonymous">

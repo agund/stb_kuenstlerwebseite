@@ -10,14 +10,14 @@
      */
     $dbc = new MysqliDb($config);
     $res = $dbc->rawQuery("Call GetStartPagePictures()");
-    $logedIn = (!empty($_SESSION['kid'])? true : false); 
+    $logedIn = !empty($_SESSION['kid']); 
     $startby = (isset($_GET['start'])) ? intval($_GET['start']) : 0;
     
     /**
      * Build the picture content
      */
     $html = '<h2>K&uuml;nstlerdatenbank der AEDK8 im Sommersemester 2019</h2>
-            <section class="bg-light" style="padding:2em;">
+            <section class="bg-light big-padding">
                 <div>
                     <div class ="row mr-3 ml-3">';
                         for ($i=$startby; $i < ($startby + $config['MaxArtistEntrys']); $i++) {
@@ -30,20 +30,22 @@
                                 "link" => (file_exists("./Bilder/small/".$res[$i]['bild'])) ? "./Bilder/small/".$res[$i]['bild'] : "./Bilder/no-img.png"
                             );
                             
-                            $html .= '<div class="card default-card">
-                                        <img class="card-img-top height-10 '.$myImg->classes.'" src="'.$myImg->link.'" alt="Card image cap" />
-                                        <div class="card-body">
-                                            <h5 class="card-title">'.$res[$i]['Titel'].'</h5>
-                                            <h6 class="card-title"> Erstellt am: '.$res[$i]['erscheinungsjahr'].'</h6>
-                                            <h6 class="card-title"> Künstler: '.$res[$i]['nachname'].'</h6>
-                                            <p class="card-text" style="">'.$res[$i]['Beschreibung'].'</p>
-                                            <a href="index.php?alink=bilddetail&bildid='.$res[$i]['bild_ID'].'" class="btn btn-primary">Details</a>
-                                            <div>Views: '.($res[$i]['views'] == ''?'0':$res[$i]['views']).'</div>';
-                                            if($logedIn) {
-                                                $html .= '<h6 class="price-link"> Preis: '. $res[$i]["preis"].' €'.'</h6>';
-                                            };
+                            $html .= '<div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                        <div class="card default-card">
+                                            <img class="card-img-top height-10 '.$myImg->classes.'" src="'.$myImg->link.'" alt="Card image cap" />
+                                            <div class="card-body">
+                                                <h5 class="card-title">'.$res[$i]['Titel'].'</h5>
+                                                <h6 class="card-title"> Erstellt am: '.$res[$i]['erscheinungsjahr'].'</h6>
+                                                <h6 class="card-title"> Künstler: '.$res[$i]['nachname'].'</h6>
+                                                <p class="card-text" style="">'.$res[$i]['Beschreibung'].'</p>
+                                                <a href="index.php?alink=bilddetail&bildid='.$res[$i]['bild_ID'].'" class="btn btn-primary">Details</a>
+                                                <div>Views: '.($res[$i]['views'] == ''?'0':$res[$i]['views']).'</div>';
+                                                if($logedIn) {
+                                                    $html .= '<h6 class="price-link"> Preis: '. $res[$i]["preis"].' €'.'</h6>';
+                                                };
 
-                                        $html .= '</div>
+                                            $html .= '</div>
+                                        </div>
                                     </div>';
                         };
                     $html .= '</div>

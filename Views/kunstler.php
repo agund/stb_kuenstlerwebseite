@@ -19,9 +19,9 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Künstler</th>
+                            <th class="d-none d-lg-table-cell d-xl-table-cell">Künstler</th>
                             <th>Name</th>
-                            <th>Portrait</th>
+                            <th class="d-none d-lg-table-cell d-xl-table-cell">Portrait</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -33,9 +33,9 @@
                                 };
 
                                 $html .= '<tr>
-                                            <td class="text-center"><img width="100" src="'.(empty($res[$i]['avatar']) || strpos($res[$i]['avatar'], ".png") !== false || strpos($res[$i]['avatar'], ".jpg") !== false ? "./Bilder/no-img.png" : "data:image/jpeg;base64,".base64_encode($res[$i]['avatar'])).'" alt="" /></td>
+                                            <td class="d-none d-lg-table-cell d-xl-table-cell text-center"><img width="100" src="'.(empty($res[$i]['avatar']) || strpos($res[$i]['avatar'], ".png") !== false || strpos($res[$i]['avatar'], ".jpg") !== false ? "./Bilder/no-img.png" : "data:image/jpeg;base64,".base64_encode($res[$i]['avatar'])).'" alt="" /></td>
                                             <td>'.$res[$i]['pseudonym'].'</td>
-                                            <td>'.$res[$i]['portrait'].'</td>
+                                            <td class="d-none d-lg-table-cell d-xl-table-cell">'.$res[$i]['portrait'].'</td>
                                             <td>
                                                 <form method="GET" action="index.php?alink=bilddetail">
                                                     <input type="hidden" value="kunstlerDetails" name="alink" />

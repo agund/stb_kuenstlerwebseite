@@ -1,106 +1,97 @@
-
-<h2>Gallery</h2>
-
 <?php
-    include "konfig.php";
+    /**
+     * Include and requirements
+    */
+    require_once("konfig.php");
     require_once("Model/DBCon.php");
+    
+    /**
+     * Constants
+     */
     $dbc = new MysqliDb($config);
-    
-    $logedIn = (!empty($_SESSION['kid'])? true : false);
-
-    $kategorie = -1;
-    if(!empty($_GET['kategorie'])){
-        $kategorie = $_GET['kategorie'];
-    }
-
+    $logedIn = !empty($_SESSION['kid']);
+    $kategorie = empty($_GET['kategorie']) ? -1 : $_GET['kategorie'];
     $res = $dbc->rawQuery("Call GetAllKetegorien()");
-    //var_dump($res);
-    if($kategorie == '')
-    $katPicture = $dbc->rawQuery("Call GetBilderByKetegorie(?)", array((int)$res[0]['kategorie_ID']));
-    else
-    $katPicture = $dbc->rawQuery("Call GetBilderByKetegorie(?)", array((int)$kategorie));
-    
-    //var_dump($katPicture);
     $selectedKategorieIndex = 0;
-
-    $html ='';
-    $html .='<section class="bg-light" style=padding:2em;>';
-    $html .='<div>';
-    $html .='<form action="index.php" method="GET">';
-
-    $html .='<label class="col-1">Kategorie</label>';
-    $html .='<input type="hidden" value="'.$_GET['alink'].'" name="alink"  />';
-    $html .='<select name="kategorie" class="custom-select col-4">';
-    for ($i=0; $i < count($res); $i++) { 
-        if($res[$i]['kategorie_ID'] == $kategorie) {
-            $selectedKategorieIndex = $i; // $res[$i]['kategorie_ID'];
-            $html .='<option selected="selected" value="'.$res[$i]['kategorie_ID'].'">'.$res[$i]['Bezeichung'].'</option>';  
-        } else {
-            $html .='<option value="'.$res[$i]['kategorie_ID'].'">'.$res[$i]['Bezeichung'].'</option>';     
-        }   
-    }
-    $html .='</select>';
-    $html .='<input type="submit" value="Filter" class="btn btn-primary">';
-    $html .='</form>';
-    $html .='</div>';
-
-    $html .='<div style="margin-top:1em;">';
-    $html .='<h3>Kategorie '.$res[$selectedKategorieIndex]['Bezeichung'].'</h3>';
-    $html .='<div style="width:90%;">'.$res[$selectedKategorieIndex]['Beschreibung'].'</div>';
-    $html .='</div>';
-
-    $html .='<div style="margin-top:1em;">';
-    $html .='<table class="table table-striped">';
-    $html .='<thead>';
-    $html .='<th>Bild</th>';
-    $html .='<th>Titel</th>';
-    $html .='<th class=" d-md-none d-sm-none ">Beschreibung</th>';
-    $html .='<th>Jahr</th>';
-    if($logedIn)
-        $html .='<th class=" d-md-none d-sm-none ">Preis</th>';
-    $html .='<th class=" d-md-none d-sm-none "></th>'; 
-    $html .='<th ></th>'; 
+    if($kategorie == '') {
+        $katPicture = $dbc->rawQuery("Call GetBilderByKetegorie(?)", array((int)$res[0]['kategorie_ID']));
+    } else {
+        $katPicture = $dbc->rawQuery("Call GetBilderByKetegorie(?)", array((int)$kategorie));
+    };
     
-    $html .='</thead>';
-    $html .='<tbody>';
-
-    for ($i=0; $i < count($katPicture); $i++) {     
-        $html .='<tr>';
-        $html .='<td><img src="Bilder/small/'.$katPicture[$i]['bild'].'" alt=""/></td>';
-        
-        $html .='<td>'.$katPicture[$i]['Titel'].'</td>';
-        $html .='<td class=" d-md-none d-sm-none ">'.$katPicture[$i]['Beschreibung'].'</td>';
-        $html .='<td>'.$katPicture[$i]['erscheinungsjahr'].'</td>';
-        if($logedIn)
-            $html .='<td class=" d-md-none d-sm-none ">'.$katPicture[$i]['preis'].'</td>';
-        
-            //var_dump($katPicture);
-        if(!empty($_SESSION['kid'])){
-            $html .='<td class=" d-md-none d-sm-none " ><form method="GET" action="index.php?alink=kaufen"><input type="hidden" value="'.$katPicture[$i]['bild_ID'].'" name="bildid" />
-            <input type="hidden" value="kaufen" name="alink" /><input type="submit" value="kaufen" class="btn btn-primary" /></form></td>';
-        }
-        $html .='<td ><form method="GET" action="index.php?alink=bilddetail"><input type="hidden" value="bilddetail" name="alink" />
-        <input type="hidden" value="'.$katPicture[$i]['bild_ID'].'" name="bildid" /><input type="submit" value="Details" class="btn btn-primary" />
-        </form></td>'; 
-        
-        $html .='</tr>';
-    }
-
-    $html .='</tbody>';
-    $html .='</table>';
-    $html .='</div>';
-    $html .='</section>';
-
-    $html .= '<script>
-
-    $(document).ready(function()
-    {
-        
-    });
-
-    </script>
-    ';
-
-    //var_dump($res);
+    /**
+     * Build the gallery content
+     */
+    $html = '<h2>Gallery</h2>
+            <section class="bg-light big-padding">
+                <div>
+                    <form action="index.php" method="GET">
+                        <div style="display: flex;">
+                            <b class="mr-2" style="margin-top: 7px;">Kategorie:</b>
+                            <input type="hidden" value="'.$_GET['alink'].'" name="alink"  />
+                            <select name="kategorie" class="custom-select mr-2">';
+                                if(!empty($res)) {
+                                    foreach($res AS $num => $kat) {
+                                        if($kat['kategorie_ID'] == $kategorie) {
+                                            $selectedKategorieIndex = $num;
+                                            $html .='<option selected="selected" value="'.$kat['kategorie_ID'].'">'.$kat['Bezeichung'].'</option>';  
+                                        } else {
+                                            $html .='<option value="'.$kat['kategorie_ID'].'">'.$kat['Bezeichung'].'</option>';     
+                                        };
+                                    };
+                                };
+                            $html .='</select>
+                            <input type="submit" value="Filter" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+                <div class="mt-3">
+                    <h3>Kategorie '.$res[$selectedKategorieIndex]['Bezeichung'].'</h3>
+                    <div class="mx-2">'.$res[$selectedKategorieIndex]['Beschreibung'].'</div>
+                </div>
+                <div class="mt-3">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <th>Bild</th>
+                            <th>Titel</th>
+                            <th class="d-none d-lg-table-cell d-xl-table-cell">Beschreibung</th>
+                            <th class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">Jahr</th>';
+                            if($logedIn) {
+                                $html .='<th class="d-none d-lg-table-cell d-xl-table-cell">Preis</th>';
+                            };
+                            $html .='<th class="d-none d-lg-table-cell d-xl-table-cell"></th>
+                            <th ></th>
+                        </thead>
+                        <tbody>';
+                            foreach($katPicture AS $pic) {
+                                $html .='<tr>
+                                            <td style="width: 150px;"><img width="150" src="'.(file_exists("./Bilder/small/".$pic['bild']) ? "./Bilder/small/".$pic['bild'] : "./Bilder/no-img.png").'" alt=""/></td>
+                                            <td>'.$pic['Titel'].'</td>
+                                            <td class="d-none d-lg-table-cell d-xl-table-cell">'.$pic['Beschreibung'].'</td>
+                                            <td class="d-none d-md-table-cell d-lg-table-cell d-xl-table-cell">'.$pic['erscheinungsjahr'].'</td>';
+                                            if($logedIn) {
+                                                $html .='<td class="d-none d-lg-table-cell d-xl-table-cell">'.$pic['preis'].'</td>';
+                                            };
+                                            if(!empty($_SESSION['kid'])){
+                                                $html .='<td class="d-none d-lg-table-cell d-xl-table-cell">
+                                                            <form method="GET" action="index.php?alink=kaufen">
+                                                                <input type="hidden" value="'.$pic['bild_ID'].'" name="bildid" />
+                                                                <input type="hidden" value="kaufen" name="alink" /><input type="submit" value="kaufen" class="btn btn-success" />
+                                                            </form>
+                                                        </td>';
+                                            };
+                                            $html .='<td>
+                                                        <form method="GET" action="index.php?alink=bilddetail">
+                                                            <input type="hidden" value="bilddetail" name="alink" />
+                                                            <input type="hidden" value="'.$pic['bild_ID'].'" name="bildid" />
+                                                            <input type="submit" value="Details" class="btn btn-primary" />
+                                                        </form>
+                                                    </td>
+                                        </tr>';
+                            };
+                        $html .='</tbody>
+                    </table>
+                </div>
+            </section>';
     echo $html;
 ?>
